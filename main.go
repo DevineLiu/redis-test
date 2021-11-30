@@ -49,12 +49,14 @@ func NewRedisClient(address []string, arc Architecture) RedisClient {
 func (r *RedisClient) Ping() error {
 	fmt.Println("Staring Ping Test")
 	if r.cluster_client != nil {
-		_, err := r.cluster_client.Ping(context.TODO()).Result()
-		return err
+		if _, err := r.cluster_client.Ping(context.TODO()).Result(); err != nil {
+			return err
+		}
 	}
 	if r.sentinel_client != nil {
-		_, err := r.sentinel_client.Ping(context.TODO()).Result()
-		return err
+		if _, err := r.sentinel_client.Ping(context.TODO()).Result(); err != nil {
+			return err
+		}
 	}
 	fmt.Println("Passed PING Test")
 	return nil
@@ -65,7 +67,9 @@ func (r *RedisClient) Get() error {
 	if r.cluster_client != nil {
 		for i := 0; i < 100; i++ {
 			if _, err := r.cluster_client.Get(context.TODO(), strconv.Itoa(i)).Result(); err != nil {
-				return err
+				if err != redis.Nil {
+					return err
+				}
 			}
 		}
 
@@ -119,7 +123,7 @@ func main() {
 	if err := client.Ping(); err != nil {
 		fmt.Println(err.Error())
 	}
-	if err := client.Set(); err != nil {
+	if err := client.Get(); err != nil {
 		fmt.Println(err.Error())
 	}
 	if err := client.Set(); err != nil {
@@ -129,7 +133,7 @@ func main() {
 		if err := client.Ping(); err != nil {
 			fmt.Println(err.Error())
 		}
-		if err := client.Set(); err != nil {
+		if err := client.Get(); err != nil {
 			fmt.Println(err.Error())
 		}
 		if err := client.Set(); err != nil {
