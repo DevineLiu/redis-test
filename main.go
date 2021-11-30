@@ -90,7 +90,7 @@ func (r *RedisClient) Set() error {
 	fmt.Println("Staring Set Test")
 	if r.cluster_client != nil {
 		for i := 0; i < 100; i++ {
-			if _, err := r.cluster_client.Set(context.TODO(), strconv.Itoa(i), strconv.Itoa(i), 10*time.Second).Result(); err != nil {
+			if _, err := r.cluster_client.Set(context.TODO(), "__redis-test__"+strconv.Itoa(i), strconv.Itoa(i), 10*time.Second).Result(); err != nil {
 				return err
 			}
 		}
@@ -98,7 +98,7 @@ func (r *RedisClient) Set() error {
 	}
 	if r.sentinel_client != nil {
 		for i := 0; i < 100; i++ {
-			if _, err := r.sentinel_client.Set(context.TODO(), strconv.Itoa(i), strconv.Itoa(i), 10*time.Second).Result(); err != nil {
+			if _, err := r.sentinel_client.Set(context.TODO(), "__redis-test__"+strconv.Itoa(i), strconv.Itoa(i), 10*time.Second).Result(); err != nil {
 				return err
 			}
 		}
